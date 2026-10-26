@@ -4,157 +4,110 @@ This document details the database architecture and Entity Relationship (ER) mod
 
 ---
 
-## 1. Tech Stack & Database Architecture
-- **Database Engine:** PostgreSQL
-- **ORM:** Prisma
-- **Backend Runtime & Framework:** Node.js + Express
-- **Frontend:** React + Vite
-- **Authentication & Security:** JWT, bcrypt password hashing, Role-Based Access Control (RBAC)
-
----
-
-## 2. Entity Relationship Diagram (Mermaid)
+## 1. Entity Relationship Diagram (Mermaid)
 
 ```mermaid
 erDiagram
-    USER ||--o| PATIENT : "has profile (1:0..1)"
-    USER ||--o| DOCTOR : "has profile (1:0..1)"
-    DOCTOR ||--o{ AVAILABILITY : "publishes slots (1:N)"
-    PATIENT ||--o{ APPOINTMENT : "books (1:N)"
-    AVAILABILITY ||--o{ APPOINTMENT : "referenced in (1:N)"
+    USER ||--o| PATIENT : "has profile"
+    USER ||--o| DOCTOR : "has profile"
+    DOCTOR ||--o{ AVAILABILITY : "offers slots"
+    PATIENT ||--o{ APPOINTMENT : "books"
+    AVAILABILITY ||--o{ APPOINTMENT : "has booking history"
 
     USER {
-        uuid id PK "Primary Key"
-        string email UK "Unique Email"
-        string password_hash "Hashed Password"
-        enum role "PATIENT | DOCTOR | RECEPTIONIST | ADMIN"
-        string first_name "First Name"
-        string last_name "Last Name"
-        string phone "Contact Number"
-        enum status "ACTIVE | INACTIVE | SUSPENDED"
-        timestamp created_at "Created Timestamp"
-        timestamp updated_at "Updated Timestamp"
+        int id PK
+        string name
+        string email UK
+        string password_hash
+        string role
+        string account_status
     }
 
     PATIENT {
-        uuid id PK "Primary Key"
-        uuid user_id FK,UK "Foreign Key referencing USER(id)"
-        date date_of_birth "Date of Birth"
-        enum gender "MALE | FEMALE | OTHER"
-        string blood_group "Blood Group (e.g. O+, A+)"
-        text address "Residential Address"
-        string emergency_contact_name "Emergency Contact Person"
-        string emergency_contact_phone "Emergency Contact Number"
-        text medical_notes "Allergies / Chronic Conditions"
-        timestamp created_at "Created Timestamp"
-        timestamp updated_at "Updated Timestamp"
+        int id PK
+        int user_id FK,UK
+        string phone
+        string gender
     }
 
     DOCTOR {
-        uuid id PK "Primary Key"
-        uuid user_id FK,UK "Foreign Key referencing USER(id)"
-        string specialization "Specialty (e.g. Cardiology, Neurology)"
-        string qualification "Degrees (e.g. MBBS, MD)"
-        int experience_years "Years of Practice"
-        string license_number UK "Medical License Number"
-        decimal consultation_fee "Fee per slot"
-        text bio "Professional Bio"
-        timestamp created_at "Created Timestamp"
-        timestamp updated_at "Updated Timestamp"
+        int id PK
+        int user_id FK,UK
+        string specialty
+        string qualification
+        decimal consultation_fee
+        boolean is_active
     }
 
     AVAILABILITY {
-        uuid id PK "Primary Key"
-        uuid doctor_id FK "Foreign Key referencing DOCTOR(id)"
-        date slot_date "Date of Slot"
-        time start_time "Slot Start Time"
-        time end_time "Slot End Time"
-        boolean is_active "True if slot is offered and open"
-        timestamp created_at "Created Timestamp"
-        timestamp updated_at "Updated Timestamp"
+        int id PK
+        int doctor_id FK
+        datetime start_time
+        datetime end_time
+        string status
     }
 
     APPOINTMENT {
-        uuid id PK "Primary Key"
-        uuid patient_id FK "Foreign Key referencing PATIENT(id)"
-        uuid availability_id FK "Foreign Key referencing AVAILABILITY(id)"
-        enum status "PENDING | CONFIRMED | COMPLETED | CANCELLED | NO_SHOW"
-        text reason "Reason for Visit"
-        text cancellation_reason "Reason if cancelled"
-        uuid cancelled_by "User ID who cancelled"
-        timestamp booked_at "Booking Timestamp"
-        timestamp created_at "Created Timestamp"
-        timestamp updated_at "Updated Timestamp"
+        int id PK
+        string booking_reference UK
+        int patient_id FK
+        int availability_id FK
+        string reason
+        string status
+        string cancellation_reason
     }
 ```
 
 ---
 
-## 3. Entities & Data Dictionary
+## 2. Entities & Data Dictionary
 
-### 3.1 `USER`
-Represents authentication and credential management for all actors.
-- **`id`** (`UUID`, PK): Unique identifier.
-- **`email`** (`VARCHAR(255)`, UK): Unique login email address.
-- **`password_hash`** (`VARCHAR(255)`): Securely hashed password (bcrypt / argon2).
-- **`role`** (`ENUM`): Defines system privileges: `'PATIENT'`, `'DOCTOR'`, `'RECEPTIONIST'`, `'ADMIN'`.
-- **`first_name`**, **`last_name`** (`VARCHAR(100)`): Names.
-- **`phone`** (`VARCHAR(20)`): Contact phone number.
-- **`status`** (`ENUM`): `'ACTIVE'`, `'INACTIVE'`, `'SUSPENDED'`.
-- **`created_at`**, **`updated_at`** (`TIMESTAMP`).
+### 2.1 `USER`
+- **`id`** (`int`, PK): Unique identifier for the user account.
+- **`name`** (`string`): Full name of the user.
+- **`email`** (`string`, UK): Unique email address used for login.
+- **`password_hash`** (`string`): Securely hashed password.
+- **`role`** (`string`): Role in the system (e.g. `patient`, `doctor`, `receptionist`, `admin`).
+- **`account_status`** (`string`): Status of the account (e.g. `active`, `inactive`, `suspended`).
 
-### 3.2 `PATIENT`
-Contains patient-specific clinical and demographic records.
-- **`id`** (`UUID`, PK).
-- **`user_id`** (`UUID`, FK, UK): One-to-one link to `USER.id`.
-- **`date_of_birth`** (`DATE`), **`gender`** (`ENUM: MALE, FEMALE, OTHER`).
-- **`blood_group`** (`VARCHAR(5)`).
-- **`address`** (`TEXT`).
-- **`emergency_contact_name`**, **`emergency_contact_phone`** (`VARCHAR`).
-- **`medical_notes`** (`TEXT`): Important baseline notes or allergies.
+### 2.2 `PATIENT`
+- **`id`** (`int`, PK): Unique identifier for the patient record.
+- **`user_id`** (`int`, FK, UK): Reference to `USER(id)`. Ensures a one-to-one link per patient.
+- **`phone`** (`string`): Contact phone number.
+- **`gender`** (`string`): Gender of the patient.
 
-### 3.3 `DOCTOR`
-Contains professional credentials, fees, and specialty details.
-- **`id`** (`UUID`, PK).
-- **`user_id`** (`UUID`, FK, UK): One-to-one link to `USER.id`.
-- **`specialization`** (`VARCHAR(150)`): Specialty area (e.g., Cardiology, Orthopedics).
-- **`qualification`** (`VARCHAR(150)`): Educational qualifications.
-- **`experience_years`** (`INT`): Experience in years.
-- **`license_number`** (`VARCHAR(100)`, UK): Verified medical license number.
-- **`consultation_fee`** (`DECIMAL(10, 2)`): Fee charge per appointment.
-- **`bio`** (`TEXT`): Brief profile summary.
+### 2.3 `DOCTOR`
+- **`id`** (`int`, PK): Unique identifier for the doctor record.
+- **`user_id`** (`int`, FK, UK): Reference to `USER(id)`. Ensures a one-to-one link per doctor.
+- **`specialty`** (`string`): Medical specialty (e.g. Cardiology, Dermatology).
+- **`qualification`** (`string`): Professional qualifications / degrees.
+- **`consultation_fee`** (`decimal`): Fee charged per consultation.
+- **`is_active`** (`boolean`): Active status flag for doctor scheduling.
 
-### 3.4 `AVAILABILITY`
-Doctor-defined schedule time slots.
-- **`id`** (`UUID`, PK).
-- **`doctor_id`** (`UUID`, FK): References `DOCTOR.id`.
-- **`slot_date`** (`DATE`): Date when the doctor will be available.
-- **`start_time`** (`TIME`): Start time (e.g., 09:00:00).
-- **`end_time`** (`TIME`): End time (e.g., 09:30:00).
-- **`is_active`** (`BOOLEAN`): Set to false if doctor revokes the slot.
-- **Constraints:**
-  - Compound unique constraint on `(doctor_id, slot_date, start_time)` ensures a doctor cannot have overlapping/duplicate slots.
+### 2.4 `AVAILABILITY`
+- **`id`** (`int`, PK): Unique identifier for the availability slot.
+- **`doctor_id`** (`int`, FK): Reference to `DOCTOR(id)`.
+- **`start_time`** (`datetime`): Slot start timestamp.
+- **`end_time`** (`datetime`): Slot end timestamp.
+- **`status`** (`string`): Slot status (e.g. `available`, `booked`, `cancelled`).
 
-### 3.5 `APPOINTMENT`
-The booking contract between a patient and a doctor's availability slot.
-- **`id`** (`UUID`, PK).
-- **`patient_id`** (`UUID`, FK): References `PATIENT.id`.
-- **`availability_id`** (`UUID`, FK): References `AVAILABILITY.id`.
-- **`status`** (`ENUM`): `'PENDING'`, `'CONFIRMED'`, `'COMPLETED'`, `'CANCELLED'`, `'NO_SHOW'`.
-- **`reason`** (`TEXT`): Chief medical complaint or visit purpose.
-- **`cancellation_reason`** (`TEXT`): Logged if cancelled.
-- **`cancelled_by`** (`UUID`): User who initiated cancellation.
-- **`booked_at`** (`TIMESTAMP`): Time of confirmation.
+### 2.5 `APPOINTMENT`
+- **`id`** (`int`, PK): Unique identifier for the appointment booking.
+- **`booking_reference`** (`string`, UK): Unique tracking code / reference string for the appointment.
+- **`patient_id`** (`int`, FK): Reference to `PATIENT(id)`.
+- **`availability_id`** (`int`, FK): Reference to `AVAILABILITY(id)`.
+- **`reason`** (`string`): Reason or chief medical complaint for the visit.
+- **`status`** (`string`): Booking status (e.g. `pending`, `confirmed`, `completed`, `cancelled`).
+- **`cancellation_reason`** (`string`): Optional note documenting reason if cancelled.
 
 ---
 
-## 4. Key Relationships & Cardinality
+## 3. Relationships & Cardinality
 
-| Relationship | Cardinality | Enforced By | Description |
+| Relationship | Cardinality | Key / Constraint | Description |
 |---|---|---|---|
-| **USER → PATIENT** | 1 : 0..1 | FK (`PATIENT.user_id`) + Unique Index | Every patient is a user; not all users are patients. |
-| **USER → DOCTOR** | 1 : 0..1 | FK (`DOCTOR.user_id`) + Unique Index | Every doctor has an auth account; distinct credentials. |
-| **DOCTOR → AVAILABILITY** | 1 : N | FK (`AVAILABILITY.doctor_id`) | A doctor creates multiple date/time slots. |
-| **PATIENT → APPOINTMENT** | 1 : N | FK (`APPOINTMENT.patient_id`) | A patient can have multiple appointment bookings over time. |
-| **AVAILABILITY → APPOINTMENT** | 1 : N | FK (`APPOINTMENT.availability_id`) | A slot maps to bookings. Only one active booking allowed (history preserved). |
-
+| **USER → PATIENT** | One-to-Zero-or-One (`||--o|`) | `PATIENT.user_id` (FK, UK) | A user can have at most one patient profile. |
+| **USER → DOCTOR** | One-to-Zero-or-One (`||--o|`) | `DOCTOR.user_id` (FK, UK) | A user can have at most one doctor profile. |
+| **DOCTOR → AVAILABILITY** | One-to-Many (`||--o{`) | `AVAILABILITY.doctor_id` (FK) | A doctor publishes multiple availability slots. |
+| **PATIENT → APPOINTMENT** | One-to-Many (`||--o{`) | `APPOINTMENT.patient_id` (FK) | A patient can book multiple appointments over time. |
+| **AVAILABILITY → APPOINTMENT** | One-to-Many (`||--o{`) | `APPOINTMENT.availability_id` (FK) | A slot connects to bookings to maintain appointment history. |
