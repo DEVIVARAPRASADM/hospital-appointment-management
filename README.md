@@ -32,16 +32,8 @@ Detailed engineering design documents are organized in the [`docs/`](file:///Use
    - Complete Mermaid ER diagram.
    - Comprehensive data dictionary (5 core entities: `USER`, `PATIENT`, `DOCTOR`, `AVAILABILITY`, `APPOINTMENT`).
    - Cardinality and relationship mapping.
-   - Database-level double-booking prevention strategies (PostgreSQL partial unique index + Prisma transactions).
-   - Complete Prisma schema definition.
 
-2. **[Actor Relationships & Use Cases](file:///Users/mullaguridevivaraprasad/projects/hospital-appointment-management/docs/actor-relationships.md)**
-   - System actor definitions (`Patient`, `Doctor`, `Receptionist`, `Admin`).
-   - Interactive Mermaid flowchart showing user interaction boundaries.
-   - Role-Based Access Control (RBAC) permission matrix.
-   - Sequence diagrams for booking and doctor consultation workflows.
-
-3. **[Loom Presentation Script & Outline](file:///Users/mullaguridevivaraprasad/projects/hospital-appointment-management/docs/loom-outline.md)**
+2. **[Loom Presentation Script & Outline](file:///Users/mullaguridevivaraprasad/projects/hospital-appointment-management/docs/loom-outline.md)**
    - Timed 4–5 minute presentation script.
    - Slide-by-slide screen guidance and talking points for mentor review.
    - Technical highlights checklist.
@@ -54,7 +46,6 @@ hospital-appointment-management/
 ├── README.md
 └── docs/
     ├── er-diagram.md
-    ├── actor-relationships.md
     └── loom-outline.md
 ```
 
