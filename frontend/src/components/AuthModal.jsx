@@ -36,12 +36,6 @@ export default function AuthModal({ isOpen, onClose }) {
     }
   };
 
-  const fillDemoCreds = (demoEmail) => {
-    setEmail(demoEmail);
-    setPassword('Password@123');
-    setIsRegister(false);
-  };
-
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ padding: '1.75rem' }}>
@@ -149,7 +143,7 @@ export default function AuthModal({ isOpen, onClose }) {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: 'var(--slate-600)' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.88rem', color: 'var(--slate-600)' }}>
           {isRegister ? (
             <span>
               Already have an account?{' '}
@@ -171,50 +165,6 @@ export default function AuthModal({ isOpen, onClose }) {
               </button>
             </span>
           )}
-        </div>
-
-        {/* Demo Fast Login Pills */}
-        <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--slate-100)' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-            Quick Demo Logins (Password: Password@123):
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-            <button
-              onClick={() => fillDemoCreds('patient@carepoint.com')}
-              className="badge badge-neutral"
-              style={{ padding: '0.4rem 0.6rem' }}
-            >
-              👤 Patient
-            </button>
-            <button
-              onClick={() => fillDemoCreds('reception@carepoint.com')}
-              className="badge badge-warning"
-              style={{ padding: '0.4rem 0.6rem' }}
-            >
-              📋 Receptionist
-            </button>
-            <button
-              onClick={() => fillDemoCreds('nurse@carepoint.com')}
-              className="badge badge-success"
-              style={{ padding: '0.4rem 0.6rem' }}
-            >
-              🩺 Nurse
-            </button>
-            <button
-              onClick={() => fillDemoCreds('doctor.rao@carepoint.com')}
-              className="badge badge-info"
-              style={{ padding: '0.4rem 0.6rem' }}
-            >
-              👨‍⚕️ Doctor Rao
-            </button>
-            <button
-              onClick={() => fillDemoCreds('admin@carepoint.com')}
-              className="badge badge-danger"
-              style={{ padding: '0.4rem 0.6rem' }}
-            >
-              🛡️ Admin
-            </button>
-          </div>
         </div>
       </div>
     </div>
