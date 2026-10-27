@@ -16,11 +16,11 @@ async function handleResponse(response) {
 
 export const api = {
   // Auth
-  async login(email, password) {
+  async login(email, password, role) {
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, role }),
     });
     return handleResponse(res);
   },

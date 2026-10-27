@@ -28,8 +28,8 @@ export function AuthProvider({ children }) {
     loadUser();
   }, []);
 
-  const login = async (email, password) => {
-    const data = await api.login(email, password);
+  const login = async (email, password, role) => {
+    const data = await api.login(email, password, role);
     localStorage.setItem('carepoint_token', data.token);
     setUser(data.user);
     return data.user;

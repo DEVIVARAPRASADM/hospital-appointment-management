@@ -274,13 +274,14 @@ input, select, textarea {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
   padding: 1rem;
+  animation: overlayFadeIn 0.25s ease-out;
 }
 
 .modal-content {
@@ -288,18 +289,82 @@ input, select, textarea {
   border-radius: var(--radius-xl);
   max-width: 550px;
   width: 100%;
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2);
   overflow: hidden;
-  animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: modalScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s ease;
 }
 
-@keyframes modalIn {
+/* Animations */
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(10px);
+    transform: scale(0.92) translateY(16px);
   }
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
 }
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.02); filter: brightness(1.08); }
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: slideDownFade 0.25s ease-out forwards;
+}
+
+/* Role Color Themes */
+.theme-doctor {
+  --role-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  --role-accent: #0284c7;
+  --role-light: #eff6ff;
+  --role-border: #bfdbfe;
+}
+
+.theme-patient {
+  --role-gradient: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  --role-accent: #0d9488;
+  --role-light: #f0fdfa;
+  --role-border: #99f6e4;
+}
+
+.theme-nurse {
+  --role-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+  --role-accent: #059669;
+  --role-light: #ecfdf5;
+  --role-border: #a7f3d0;
+}
+
+.theme-receptionist {
+  --role-gradient: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  --role-accent: #d97706;
+  --role-light: #fffbeb;
+  --role-border: #fde68a;
+}
+
+.theme-admin {
+  --role-gradient: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+  --role-accent: #7c3aed;
+  --role-light: #f5f3ff;
+  --role-border: #ddd6fe;
+}
+
