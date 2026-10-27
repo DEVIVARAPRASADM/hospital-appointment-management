@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import AuthModal from './components/AuthModal';
+import LandingPage from './pages/LandingPage';
+import DoctorPortal from './pages/DoctorPortal';
 import PatientDiscovery from './pages/PatientDiscovery';
 import PatientAppointments from './pages/PatientAppointments';
 import ReceptionWorkspace from './pages/ReceptionWorkspace';
@@ -10,13 +12,15 @@ import AdminPanel from './pages/AdminPanel';
 
 function MainApp() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('patient-discovery');
+  const [activeTab, setActiveTab] = useState('landing');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // Auto-switch to relevant operational workspace on staff login
+  // Auto-switch to relevant operational workspace on staff or patient login
   React.useEffect(() => {
     if (user) {
-      if (user.role === 'RECEPTIONIST') {
+      if (user.role === 'DOCTOR') {
+        setActiveTab('doctor-portal');
+      } else if (user.role === 'RECEPTIONIST') {
         setActiveTab('reception-workspace');
       } else if (user.role === 'NURSE') {
         setActiveTab('nurse-triage');
@@ -25,6 +29,9 @@ function MainApp() {
       } else if (user.role === 'PATIENT') {
         setActiveTab('patient-discovery');
       }
+    } else {
+      // Revert to landing page when user logs out
+      setActiveTab('landing');
     }
   }, [user]);
 
@@ -42,6 +49,13 @@ function MainApp() {
       />
 
       <main style={{ flex: 1 }}>
+        {activeTab === 'landing' && (
+          <LandingPage 
+            onOpenAuth={() => setIsAuthModalOpen(true)}
+            onExploreDoctors={() => setActiveTab('patient-discovery')}
+          />
+        )}
+        {activeTab === 'doctor-portal' && <DoctorPortal />}
         {activeTab === 'patient-discovery' && (
           <PatientDiscovery onOpenAuth={() => setIsAuthModalOpen(true)} />
         )}

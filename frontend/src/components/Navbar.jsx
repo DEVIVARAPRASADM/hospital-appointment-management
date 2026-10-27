@@ -35,7 +35,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
       }}>
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
-             onClick={() => setActiveTab('patient-discovery')}>
+             onClick={() => setActiveTab('landing')}>
           <div style={{
             background: 'linear-gradient(135deg, #0284c7 0%, #0d9488 100%)',
             color: '#fff',
@@ -60,6 +60,25 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
         {/* Navigation Tabs based on permissions */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setActiveTab('landing')}
+            style={{
+              padding: '0.5rem 0.9rem',
+              borderRadius: '8px',
+              fontSize: '0.88rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: activeTab === 'landing' ? 'var(--primary-50)' : 'transparent',
+              color: activeTab === 'landing' ? 'var(--primary-700)' : 'var(--slate-600)',
+              border: activeTab === 'landing' ? '1px solid var(--primary-200)' : '1px solid transparent'
+            }}
+          >
+            <Building2 size={17} />
+            Home
+          </button>
+
           <button
             onClick={() => setActiveTab('patient-discovery')}
             style={{
@@ -97,6 +116,27 @@ export default function Navbar({ activeTab, setActiveTab }) {
             >
               <ClipboardList size={17} />
               My Appointments
+            </button>
+          )}
+
+          {user && (user.role === 'DOCTOR' || user.role === 'ADMIN') && (
+            <button
+              onClick={() => setActiveTab('doctor-portal')}
+              style={{
+                padding: '0.5rem 0.9rem',
+                borderRadius: '8px',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                background: activeTab === 'doctor-portal' ? 'var(--primary-50)' : 'transparent',
+                color: activeTab === 'doctor-portal' ? 'var(--primary-700)' : 'var(--slate-600)',
+                border: activeTab === 'doctor-portal' ? '1px solid var(--primary-200)' : '1px solid transparent'
+              }}
+            >
+              <Users size={17} />
+              Doctor Portal
             </button>
           )}
 
