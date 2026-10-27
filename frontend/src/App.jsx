@@ -13,6 +13,21 @@ function MainApp() {
   const [activeTab, setActiveTab] = useState('patient-discovery');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  // Auto-switch to relevant operational workspace on staff login
+  React.useEffect(() => {
+    if (user) {
+      if (user.role === 'RECEPTIONIST') {
+        setActiveTab('reception-workspace');
+      } else if (user.role === 'NURSE') {
+        setActiveTab('nurse-triage');
+      } else if (user.role === 'ADMIN') {
+        setActiveTab('admin-panel');
+      } else if (user.role === 'PATIENT') {
+        setActiveTab('patient-discovery');
+      }
+    }
+  }, [user]);
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
       <Navbar
@@ -45,7 +60,7 @@ function MainApp() {
         color: 'var(--slate-500)',
         marginTop: '3rem'
       }}>
-        CarePoint Hospital Operations & Outpatient Management Platform • Production Architecture
+        CarePoint Hospital Operations & Outpatient Management Platform • Role-Based Access Control (RBAC) Architecture
       </footer>
 
       <AuthModal
